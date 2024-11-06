@@ -33,7 +33,6 @@ tl.from('[animate] .word', {
     stagger: 0.1
   }, "-=.5");
 
-gsap.registerPlugin(ScrollTrigger);
 
 // Split text into words for all animate elements
 let typeSplit2 = new SplitType('[animate-section]', {
