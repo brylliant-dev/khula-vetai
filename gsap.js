@@ -39,7 +39,7 @@ let observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     let element = entry.target;
     if (entry.isIntersecting) {
-      // Animate when entering viewport
+      // Animate when entering viewport with similar settings as [animate]
       let tl = gsap.timeline({ 
         repeat: 0, // Play once
         onComplete: () => observer.observe(element) // Ensure element is observed for next entry
@@ -50,15 +50,15 @@ let observer = new IntersectionObserver((entries) => {
         { 
           opacity: 1,
           backgroundImage: 'linear-gradient(41.89deg, #ff007b 7.89%, #9339f3 97.13%)',
-          duration: 1,
+          duration: 1, // Match duration with [animate]
           ease: 'power1.inOut',
-          stagger: 0.2 
+          stagger: 0.1 // Match stagger with [animate]
         })
         .to(element.querySelectorAll('.word'), {
           backgroundImage: 'var(--gradient)',
-          duration: 1,
+          duration: 1, // Match duration with [animate]
           ease: 'power1.inOut',
-          stagger: 0.2
+          stagger: 0.1 // Match stagger with [animate]
         });
     } else {
       // Reset animation when exiting viewport
