@@ -6,9 +6,8 @@ let typeSplit = new SplitType('[animate]', {
   tagName: 'span'
 });
 
-let tl = gsap.timeline();
-
 // Initial fade-in animation for elements with [animate] attribute
+let tl = gsap.timeline();
 tl.from('[animate] .word', {
     opacity: 0,
     duration: 1,
@@ -40,18 +39,18 @@ let observer = new IntersectionObserver((entries) => {
     let element = entry.target;
     if (entry.isIntersecting) {
       // Animate when entering viewport
-      let tl = gsap.timeline();
-      tl.from(element.querySelectorAll('.word'), {
-          opacity: 0.3,
-          duration: 1,
-          ease: 'power1.out',
-          stagger: 0.2
-        })
-        .to(element.querySelectorAll('.word'), {
+      let tl = gsap.timeline({
+        onComplete: () => observer.unobserve(element) // Unobserve after animation completes
+      });
+
+      tl.fromTo(element.querySelectorAll('.word'), 
+        { opacity: 0 }, // Start from opacity 0
+        { 
+          opacity: 1,
           backgroundImage: 'linear-gradient(41.89deg, #ff007b 7.89%, #9339f3 97.13%)',
           duration: 1,
           ease: 'power1.inOut',
-          stagger: 0.2
+          stagger: 0.2 
         })
         .to(element.querySelectorAll('.word'), {
           backgroundImage: 'var(--gradient)',
@@ -59,12 +58,9 @@ let observer = new IntersectionObserver((entries) => {
           ease: 'power1.inOut',
           stagger: 0.2
         });
-
-      // Unobserve to ensure animation runs only once per entry
-      observer.unobserve(element);
     } else {
       // Reset animation when exiting viewport
-      gsap.set(element.querySelectorAll('.word'), { opacity: 0 });
+      gsap.set(element.querySelectorAll('.word'), { opacity: 0 }); // Reset opacity to 0 on exit
       observer.observe(element); // Re-observe for future entry
     }
   });
