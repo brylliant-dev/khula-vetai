@@ -6,8 +6,9 @@ let typeSplit = new SplitType('[animate]', {
   tagName: 'span'
 });
 
+let tl = gsap.timeline({ delay: 0.5 }); // Delay animation start by 0.5 seconds
+
 // Initial fade-in animation for elements with [animate] attribute
-let tl = gsap.timeline();
 tl.from('[animate] .word', {
     opacity: 0,
     duration: 1,
@@ -33,14 +34,15 @@ let typeSplit2 = new SplitType('[animate-section]', {
   tagName: 'span'
 });
 
-// IntersectionObserver to trigger animations on entering the viewport
+// IntersectionObserver to trigger animations on entering and resetting on exiting the viewport
 let observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     let element = entry.target;
     if (entry.isIntersecting) {
       // Animate when entering viewport
-      let tl = gsap.timeline({
-        onComplete: () => observer.unobserve(element) // Unobserve after animation completes
+      let tl = gsap.timeline({ 
+        repeat: 0, // Play once
+        onComplete: () => observer.observe(element) // Ensure element is observed for next entry
       });
 
       tl.fromTo(element.querySelectorAll('.word'), 
@@ -61,7 +63,6 @@ let observer = new IntersectionObserver((entries) => {
     } else {
       // Reset animation when exiting viewport
       gsap.set(element.querySelectorAll('.word'), { opacity: 0 }); // Reset opacity to 0 on exit
-      observer.observe(element); // Re-observe for future entry
     }
   });
 }, { threshold: 0.5 });
