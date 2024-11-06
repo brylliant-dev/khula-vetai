@@ -8,21 +8,19 @@ let typeSplit = new SplitType('[animate]', {
 
 let tl = gsap.timeline();
 
-// Initial fade-in
+// Initial fade-in animation for elements with [animate] attribute
 tl.from('[animate] .word', {
     opacity: 0,
     duration: 1,
     ease: 'power1.out',
     stagger: 0.1
   })
-  // Animate to white gradient
   .to('[animate] .word', {
     backgroundImage: 'linear-gradient(41.89deg, #ff007b 7.89%, #9339f3 97.13%)',
     duration: 1,
     ease: 'power1.inOut',
     stagger: 0.1
   }, 0.1)
-  // Animate back to original gradient
   .to('[animate] .word', {
     backgroundImage: 'var(--gradient)',
     duration: 1,
@@ -36,26 +34,43 @@ let typeSplit2 = new SplitType('[animate-section]', {
   tagName: 'span'
 });
 
-// Create animations for each element with animate-section attribute
+// IntersectionObserver to trigger animations on entering the viewport
+let observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    let element = entry.target;
+    if (entry.isIntersecting) {
+      // Animate when entering viewport
+      let tl = gsap.timeline();
+      tl.from(element.querySelectorAll('.word'), {
+          opacity: 0.3,
+          duration: 1,
+          ease: 'power1.out',
+          stagger: 0.2
+        })
+        .to(element.querySelectorAll('.word'), {
+          backgroundImage: 'linear-gradient(41.89deg, #ff007b 7.89%, #9339f3 97.13%)',
+          duration: 1,
+          ease: 'power1.inOut',
+          stagger: 0.2
+        })
+        .to(element.querySelectorAll('.word'), {
+          backgroundImage: 'var(--gradient)',
+          duration: 1,
+          ease: 'power1.inOut',
+          stagger: 0.2
+        });
+
+      // Unobserve to ensure animation runs only once per entry
+      observer.unobserve(element);
+    } else {
+      // Reset animation when exiting viewport
+      gsap.set(element.querySelectorAll('.word'), { opacity: 0 });
+      observer.observe(element); // Re-observe for future entry
+    }
+  });
+}, { threshold: 0.5 });
+
+// Apply the observer to each animate-section element
 document.querySelectorAll('[animate-section]').forEach(element => {
-  let tl = gsap.timeline();
-  
-  tl.from(element.querySelectorAll('.word'), {
-      opacity: 0.3,
-      duration: 1,
-      ease: 'power1.out',
-      stagger: 0.2
-    })
-    .to(element.querySelectorAll('.word'), {
-      backgroundImage: 'linear-gradient(41.89deg, #ff007b 7.89%, #9339f3 97.13%)',
-      duration: 1,
-      ease: 'power1.inOut',
-      stagger: 0.2
-    })
-    .to(element.querySelectorAll('.word'), {
-      backgroundImage: 'var(--gradient)',
-      duration: 1,
-      ease: 'power1.inOut',
-      stagger: 0.2
-    });
+  observer.observe(element);
 });
